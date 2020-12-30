@@ -11,25 +11,31 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Note = void 0;
 const typeorm_1 = require("typeorm");
+const type_graphql_1 = require("type-graphql");
 let Note = class Note extends typeorm_1.BaseEntity {
 };
 __decorate([
+    type_graphql_1.Field(() => type_graphql_1.Int),
     typeorm_1.PrimaryGeneratedColumn(),
     __metadata("design:type", Number)
 ], Note.prototype, "id", void 0);
 __decorate([
+    type_graphql_1.Field(() => String),
     typeorm_1.CreateDateColumn(),
     __metadata("design:type", Date)
 ], Note.prototype, "createdAt", void 0);
 __decorate([
+    type_graphql_1.Field(() => String),
     typeorm_1.UpdateDateColumn(),
     __metadata("design:type", Date)
 ], Note.prototype, "updatedAt", void 0);
 __decorate([
+    type_graphql_1.Field(),
     typeorm_1.Column(),
     __metadata("design:type", String)
 ], Note.prototype, "title", void 0);
 Note = __decorate([
+    type_graphql_1.ObjectType(),
     typeorm_1.Entity()
 ], Note);
 exports.Note = Note;
