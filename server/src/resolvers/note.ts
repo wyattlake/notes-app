@@ -32,6 +32,7 @@ export class NoteResolver {
             return undefined;
         }
         if (typeof title !== "undefined") {
+            //Updates the title if the title argument is defined
             await Note.update({ id }, { title });
         }
         return note;

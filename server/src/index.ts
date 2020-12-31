@@ -8,19 +8,21 @@ import express from "express";
 import { ApolloServer } from "apollo-server-express";
 import { buildSchema } from "type-graphql";
 import { NoteResolver } from "./resolvers/note";
+import { User } from "./entities/User";
+import { UserResolver } from "./resolvers/user";
 
 dotenv.config();
 
 const main = async () => {
     //Creates a connection to the postgresql database
-    const connection = await createConnection({
+    await createConnection({
         type: "postgres",
         database: "notes",
         username: env.DB_USERNAME,
         password: env.DB_PASSWORD,
         logging: !__prod__,
         synchronize: true,
-        entities: [Note],
+        entities: [Note, User],
     });
 
     const app = express();
@@ -28,7 +30,7 @@ const main = async () => {
     //Creates an Apollo server and builds schema
     const apolloServer = new ApolloServer({
         schema: await buildSchema({
-            resolvers: [NoteResolver],
+            resolvers: [NoteResolver, UserResolver],
             validate: false,
         }),
     });

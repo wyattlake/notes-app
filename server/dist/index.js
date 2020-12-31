@@ -22,21 +22,23 @@ const express_1 = __importDefault(require("express"));
 const apollo_server_express_1 = require("apollo-server-express");
 const type_graphql_1 = require("type-graphql");
 const note_1 = require("./resolvers/note");
+const User_1 = require("./entities/User");
+const user_1 = require("./resolvers/user");
 dotenv_1.default.config();
 const main = () => __awaiter(void 0, void 0, void 0, function* () {
-    const connection = yield typeorm_1.createConnection({
+    yield typeorm_1.createConnection({
         type: "postgres",
         database: "notes",
         username: process_1.env.DB_USERNAME,
         password: process_1.env.DB_PASSWORD,
         logging: !constants_1.__prod__,
         synchronize: true,
-        entities: [Note_1.Note],
+        entities: [Note_1.Note, User_1.User],
     });
     const app = express_1.default();
     const apolloServer = new apollo_server_express_1.ApolloServer({
         schema: yield type_graphql_1.buildSchema({
-            resolvers: [note_1.NoteResolver],
+            resolvers: [note_1.NoteResolver, user_1.UserResolver],
             validate: false,
         }),
     });
