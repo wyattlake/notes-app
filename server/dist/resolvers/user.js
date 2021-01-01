@@ -85,10 +85,16 @@ UserResponse = __decorate([
     type_graphql_1.ObjectType()
 ], UserResponse);
 let UserResolver = class UserResolver {
-    register_user(options) {
+    currentUser({ req }) {
+        console.log(req.session.userId);
+        if (!req.session.userId) {
+            return null;
+        }
+        return User_1.User.findOne(req.session.userId);
+    }
+    registerUser(options) {
         return __awaiter(this, void 0, void 0, function* () {
-            console.log(options.username.length);
-            if (options.username.length <= 2 || options.username.length >= 20) {
+            if (options.username.length < 2 || options.username.length > 20) {
                 return {
                     errors: [
                         {
@@ -98,7 +104,7 @@ let UserResolver = class UserResolver {
                     ],
                 };
             }
-            if (options.password.length <= 5 || options.password.length >= 30) {
+            if (options.password.length < 5 || options.password.length > 30) {
                 return {
                     errors: [
                         {
@@ -156,7 +162,7 @@ let UserResolver = class UserResolver {
             }
         });
     }
-    login(options) {
+    login(options, { req }) {
         return __awaiter(this, void 0, void 0, function* () {
             const user = yield User_1.User.findOne({ username: options.username });
             if (!user) {
@@ -180,6 +186,8 @@ let UserResolver = class UserResolver {
                     ],
                 };
             }
+            console.log(req.session.id);
+            req.session.userId = user.id;
             return {
                 user,
             };
@@ -187,17 +195,25 @@ let UserResolver = class UserResolver {
     }
 };
 __decorate([
+    type_graphql_1.Query(() => User_1.User, { nullable: true }),
+    __param(0, type_graphql_1.Ctx()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], UserResolver.prototype, "currentUser", null);
+__decorate([
     type_graphql_1.Mutation(() => UserResponse),
     __param(0, type_graphql_1.Arg("options")),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [FullUserInput]),
     __metadata("design:returntype", Promise)
-], UserResolver.prototype, "register_user", null);
+], UserResolver.prototype, "registerUser", null);
 __decorate([
     type_graphql_1.Mutation(() => UserResponse),
     __param(0, type_graphql_1.Arg("options")),
+    __param(1, type_graphql_1.Ctx()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [UsernamePasswordInput]),
+    __metadata("design:paramtypes", [UsernamePasswordInput, Object]),
     __metadata("design:returntype", Promise)
 ], UserResolver.prototype, "login", null);
 UserResolver = __decorate([

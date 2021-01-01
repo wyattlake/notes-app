@@ -1,13 +1,16 @@
 import {
     Arg,
+    Ctx,
     Field,
     InputType,
     Mutation,
     ObjectType,
+    Query,
     Resolver,
 } from "type-graphql";
 import argon2 from "argon2";
 import { User } from "../entities/User";
+import { ContextType } from "src/types";
 
 //Input with username and password
 @InputType()
@@ -54,14 +57,24 @@ class UserResponse {
 
 @Resolver()
 export class UserResolver {
+    //Gets the current user
+    @Query(() => User, { nullable: true })
+    currentUser(@Ctx() { req }: ContextType) {
+        console.log(req.session.userId);
+        if (!req.session.userId) {
+            return null;
+        }
+
+        return User.findOne(req.session.userId);
+    }
+
     //Registers a user
     @Mutation(() => UserResponse)
-    async register_user(
+    async registerUser(
         @Arg("options") options: FullUserInput
     ): Promise<UserResponse> {
-        console.log(options.username.length);
         //Returns if the username length is outside the 2-20 range
-        if (options.username.length <= 2 || options.username.length >= 20) {
+        if (options.username.length < 2 || options.username.length > 20) {
             return {
                 errors: [
                     {
@@ -72,7 +85,7 @@ export class UserResolver {
             };
         }
         //Returns if the password length is outside the 5-30 range
-        if (options.password.length <= 5 || options.password.length >= 30) {
+        if (options.password.length < 5 || options.password.length > 30) {
             return {
                 errors: [
                     {
@@ -133,7 +146,8 @@ export class UserResolver {
     //Logs a user in
     @Mutation(() => UserResponse)
     async login(
-        @Arg("options") options: UsernamePasswordInput
+        @Arg("options") options: UsernamePasswordInput,
+        @Ctx() { req }: ContextType
     ): Promise<UserResponse> {
         const user = await User.findOne({ username: options.username });
         //Returns if no user is found
@@ -160,6 +174,10 @@ export class UserResolver {
                 ],
             };
         }
+
+        console.log(req.session.id);
+        req.session.userId = user.id;
+
         return {
             user,
         };
