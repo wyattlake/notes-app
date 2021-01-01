@@ -14,11 +14,9 @@ export const Navbar: React.FC<NavbarProps> = ({}) => {
         sideLinks = (
             <>
                 <p>{data.currentUser.username}</p>
-                <NextLink href="/login">
-                    <p className={style.paddedText}>Login</p>
-                </NextLink>
+                <p>Logout</p>
                 <NextLink href="register">
-                    <p className={style.paddedText}>Register</p>
+                    <p>Register</p>
                 </NextLink>
             </>
         );
@@ -26,13 +24,15 @@ export const Navbar: React.FC<NavbarProps> = ({}) => {
         sideLinks = (
             <>
                 <NextLink href="/login">
-                    <p className={style.paddedText}>Login</p>
+                    <p>Login</p>
                 </NextLink>
                 <NextLink href="register">
-                    <p className={style.paddedText}>Register</p>
+                    <p>Register</p>
                 </NextLink>
             </>
         );
+    } else {
+        fetching;
     }
 
     return (
