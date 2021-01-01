@@ -92,8 +92,10 @@ let UserResolver = class UserResolver {
         }
         return User_1.User.findOne(req.session.userId);
     }
-    registerUser(options) {
+    registerUser({ req }, options) {
         return __awaiter(this, void 0, void 0, function* () {
+            let user;
+            console.log("hi");
             if (options.username.length < 2 || options.username.length > 20) {
                 return {
                     errors: [
@@ -116,14 +118,11 @@ let UserResolver = class UserResolver {
             }
             const hashedPassword = yield argon2_1.default.hash(options.password);
             try {
-                let user = yield User_1.User.create({
+                user = yield User_1.User.create({
                     username: options.username,
                     email: options.email,
                     password: hashedPassword,
                 }).save();
-                return {
-                    user,
-                };
             }
             catch (error) {
                 switch (error.code) {
@@ -160,6 +159,10 @@ let UserResolver = class UserResolver {
                         };
                 }
             }
+            req.session.userId = user.id;
+            return {
+                user,
+            };
         });
     }
     login(options, { req }) {
@@ -186,7 +189,6 @@ let UserResolver = class UserResolver {
                     ],
                 };
             }
-            console.log(req.session.id);
             req.session.userId = user.id;
             return {
                 user,
@@ -203,9 +205,10 @@ __decorate([
 ], UserResolver.prototype, "currentUser", null);
 __decorate([
     type_graphql_1.Mutation(() => UserResponse),
-    __param(0, type_graphql_1.Arg("options")),
+    __param(0, type_graphql_1.Ctx()),
+    __param(1, type_graphql_1.Arg("options")),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [FullUserInput]),
+    __metadata("design:paramtypes", [Object, FullUserInput]),
     __metadata("design:returntype", Promise)
 ], UserResolver.prototype, "registerUser", null);
 __decorate([

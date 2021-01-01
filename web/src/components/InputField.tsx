@@ -5,6 +5,7 @@ import style from "./styles/InputField.module.css";
 type InputFieldProps = InputHTMLAttributes<HTMLInputElement> & {
     label?: string;
     placeholder?: string;
+    maxLength?: number;
     name: string;
 };
 

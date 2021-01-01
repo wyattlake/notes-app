@@ -71,8 +71,11 @@ export class UserResolver {
     //Registers a user
     @Mutation(() => UserResponse)
     async registerUser(
+        @Ctx() { req }: ContextType,
         @Arg("options") options: FullUserInput
     ): Promise<UserResponse> {
+        let user;
+        console.log("hi");
         //Returns if the username length is outside the 2-20 range
         if (options.username.length < 2 || options.username.length > 20) {
             return {
@@ -98,14 +101,11 @@ export class UserResolver {
         const hashedPassword = await argon2.hash(options.password);
         //Tries to create a user
         try {
-            let user = await User.create({
+            user = await User.create({
                 username: options.username,
                 email: options.email,
                 password: hashedPassword,
             }).save();
-            return {
-                user,
-            };
         } catch (error) {
             switch (error.code) {
                 //Duplicate field error
@@ -141,6 +141,13 @@ export class UserResolver {
                     };
             }
         }
+
+        //Logs the user in
+        req.session.userId = user.id;
+
+        return {
+            user,
+        };
     }
 
     //Logs a user in
@@ -175,6 +182,7 @@ export class UserResolver {
             };
         }
 
+        //Logs the user in
         req.session.userId = user.id;
 
         return {

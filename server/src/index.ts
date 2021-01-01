@@ -12,6 +12,7 @@ import { UserResolver } from "./resolvers/user";
 import redis from "redis";
 import connectRedis from "connect-redis";
 import session from "express-session";
+import cors from "cors";
 import "reflect-metadata";
 
 const main = async () => {
@@ -30,13 +31,14 @@ const main = async () => {
 
     const app = express();
 
-    let redisSecret = String(env.REDIS_SECRET);
-
     const RedisStore = connectRedis(session);
     const redisClient = redis.createClient();
-    redisClient.on("connect", function (_) {
-        console.log("Connected to redis");
-    });
+    app.use(
+        cors({
+            origin: env.SITE_URL,
+            credentials: true,
+        })
+    );
 
     //Configures session variables
     app.use(
@@ -51,9 +53,9 @@ const main = async () => {
                 maxAge: 315569260000, //10 years
                 httpOnly: true,
                 sameSite: "lax",
-                secure: false,
+                secure: !__prod__,
             },
-            secret: redisSecret,
+            secret: env.REDIS_SECRET as string,
             saveUninitialized: true,
             resave: false,
         })
@@ -65,12 +67,12 @@ const main = async () => {
             resolvers: [NoteResolver, UserResolver],
             validate: false,
         }),
-        context: ({ req, res }: any) => ({ req, res }),
+        context: ({ req, res }) => ({ req, res }),
     });
 
-    apolloServer.applyMiddleware({ app });
+    apolloServer.applyMiddleware({ app, cors: false });
 
-    //Listens on port 3000
+    //Listens on server port
     app.listen(env.SERVER_PORT, () => {
         console.log("Server started on port", env.SERVER_PORT);
     });

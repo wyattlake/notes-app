@@ -26,6 +26,7 @@ const user_1 = require("./resolvers/user");
 const redis_1 = __importDefault(require("redis"));
 const connect_redis_1 = __importDefault(require("connect-redis"));
 const express_session_1 = __importDefault(require("express-session"));
+const cors_1 = __importDefault(require("cors"));
 require("reflect-metadata");
 const main = () => __awaiter(void 0, void 0, void 0, function* () {
     dotenv_1.default.config();
@@ -39,12 +40,12 @@ const main = () => __awaiter(void 0, void 0, void 0, function* () {
         entities: [Note_1.Note, User_1.User],
     });
     const app = express_1.default();
-    let redisSecret = String(process_1.env.REDIS_SECRET);
     const RedisStore = connect_redis_1.default(express_session_1.default);
     const redisClient = redis_1.default.createClient();
-    redisClient.on("connect", function (_) {
-        console.log("Connected to redis");
-    });
+    app.use(cors_1.default({
+        origin: process_1.env.SITE_URL,
+        credentials: true,
+    }));
     app.use(express_session_1.default({
         name: "qid",
         store: new RedisStore({
@@ -56,9 +57,9 @@ const main = () => __awaiter(void 0, void 0, void 0, function* () {
             maxAge: 315569260000,
             httpOnly: true,
             sameSite: "lax",
-            secure: false,
+            secure: !constants_1.__prod__,
         },
-        secret: redisSecret,
+        secret: process_1.env.REDIS_SECRET,
         saveUninitialized: true,
         resave: false,
     }));
@@ -69,7 +70,7 @@ const main = () => __awaiter(void 0, void 0, void 0, function* () {
         }),
         context: ({ req, res }) => ({ req, res }),
     });
-    apolloServer.applyMiddleware({ app });
+    apolloServer.applyMiddleware({ app, cors: false });
     app.listen(process_1.env.SERVER_PORT, () => {
         console.log("Server started on port", process_1.env.SERVER_PORT);
     });

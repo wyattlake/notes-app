@@ -1,0 +1,14 @@
+mutation RegisterUser($options: FullUserInput!) {
+    registerUser(options: $options) {
+        user {
+            username
+            createdAt
+            updatedAt
+            id
+        }
+        errors {
+            field
+            error
+        }
+    }
+}
