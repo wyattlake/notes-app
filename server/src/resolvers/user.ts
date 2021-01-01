@@ -75,7 +75,6 @@ export class UserResolver {
         @Arg("options") options: FullUserInput
     ): Promise<UserResponse> {
         let user;
-        console.log("hi");
         //Returns if the username length is outside the 2-20 range
         if (options.username.length < 2 || options.username.length > 20) {
             return {
@@ -163,7 +162,7 @@ export class UserResolver {
                 errors: [
                     {
                         field: "username",
-                        error: "Username does not exist",
+                        error: "  does not exist",
                     },
                 ],
             };

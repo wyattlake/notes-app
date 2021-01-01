@@ -53,7 +53,7 @@ const main = async () => {
                 maxAge: 315569260000, //10 years
                 httpOnly: true,
                 sameSite: "lax",
-                secure: !__prod__,
+                secure: __prod__,
             },
             secret: env.REDIS_SECRET as string,
             saveUninitialized: true,

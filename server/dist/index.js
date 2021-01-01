@@ -57,7 +57,7 @@ const main = () => __awaiter(void 0, void 0, void 0, function* () {
             maxAge: 315569260000,
             httpOnly: true,
             sameSite: "lax",
-            secure: !constants_1.__prod__,
+            secure: constants_1.__prod__,
         },
         secret: process_1.env.REDIS_SECRET,
         saveUninitialized: true,

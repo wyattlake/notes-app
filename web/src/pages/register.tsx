@@ -3,12 +3,13 @@ import { Form, Formik } from "formik";
 import { Wrapper } from "../components/Wrapper";
 import { InputField } from "components/InputField";
 import { useRegisterUserMutation } from "generated/graphql";
-import Router from "next/router";
 import { formikErrorMap } from "utils/formikErrorMap";
+import { useRouter } from "next/router";
 
 interface registerProps {}
 
 export const Register: React.FC<registerProps> = ({}) => {
+    const router = useRouter();
     const [, register] = useRegisterUserMutation();
     return (
         <Wrapper variant="small">
@@ -24,7 +25,7 @@ export const Register: React.FC<registerProps> = ({}) => {
                             formikErrorMap(response.data.registerUser.errors)
                         );
                     } else if (response.data?.registerUser.user) {
-                        Router.push("/");
+                        router.push("/");
                     }
                 }}
             >

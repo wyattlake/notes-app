@@ -95,7 +95,6 @@ let UserResolver = class UserResolver {
     registerUser({ req }, options) {
         return __awaiter(this, void 0, void 0, function* () {
             let user;
-            console.log("hi");
             if (options.username.length < 2 || options.username.length > 20) {
                 return {
                     errors: [
@@ -173,7 +172,7 @@ let UserResolver = class UserResolver {
                     errors: [
                         {
                             field: "username",
-                            error: "Username does not exist",
+                            error: "  does not exist",
                         },
                     ],
                 };
