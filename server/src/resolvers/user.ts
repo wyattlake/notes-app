@@ -10,7 +10,8 @@ import {
 } from "type-graphql";
 import argon2 from "argon2";
 import { User } from "../entities/User";
-import { ContextType } from "src/types";
+import { ContextType } from "../types";
+import { COOKIE_NAME } from "../constants";
 
 //Input with username and password
 @InputType()
@@ -192,5 +193,19 @@ export class UserResolver {
         return {
             user,
         };
+    }
+
+    @Mutation(() => Boolean)
+    logout(@Ctx() { req, res }: ContextType) {
+        return new Promise((resolve) =>
+            req.session.destroy((err) => {
+                if (err) {
+                    console.log("Failed to destroy session:", err);
+                    resolve(false);
+                }
+                res.clearCookie(COOKIE_NAME);
+                resolve(true);
+            })
+        );
     }
 }

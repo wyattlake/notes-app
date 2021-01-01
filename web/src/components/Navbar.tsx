@@ -1,11 +1,12 @@
 import React from "react";
 import NextLink from "next/link";
 import style from "./styles/Navbar.module.css";
-import { useCurrentUserQuery } from "../generated/graphql";
+import { useCurrentUserQuery, useLogoutMutation } from "../generated/graphql";
 
 interface NavbarProps {}
 
 export const Navbar: React.FC<NavbarProps> = ({}) => {
+    const [, logout] = useLogoutMutation();
     const [{ data, fetching }] = useCurrentUserQuery();
 
     let sideLinks = null;
@@ -14,7 +15,13 @@ export const Navbar: React.FC<NavbarProps> = ({}) => {
         sideLinks = (
             <>
                 <p>{data.currentUser.username}</p>
-                <p>Logout</p>
+                <p
+                    onClick={() => {
+                        logout();
+                    }}
+                >
+                    Logout
+                </p>
                 <NextLink href="register">
                     <p>Register</p>
                 </NextLink>
