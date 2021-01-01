@@ -53,7 +53,7 @@ const main = async () => {
                 sameSite: "lax",
                 secure: false,
             },
-            secret: "secret",
+            secret: redisSecret,
             saveUninitialized: true,
             resave: false,
         })
