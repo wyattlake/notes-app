@@ -92,7 +92,10 @@ let UserResolver = class UserResolver {
         }
         return User_1.User.findOne(req.session.userId);
     }
-    registerUser({ req }, options) {
+    fetchUsers() {
+        return User_1.User.find();
+    }
+    register({ req }, options) {
         return __awaiter(this, void 0, void 0, function* () {
             let user;
             if (options.username.length < 2 || options.username.length > 20) {
@@ -203,13 +206,19 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], UserResolver.prototype, "currentUser", null);
 __decorate([
+    type_graphql_1.Query(() => [User_1.User]),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], UserResolver.prototype, "fetchUsers", null);
+__decorate([
     type_graphql_1.Mutation(() => UserResponse),
     __param(0, type_graphql_1.Ctx()),
     __param(1, type_graphql_1.Arg("options")),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, FullUserInput]),
     __metadata("design:returntype", Promise)
-], UserResolver.prototype, "registerUser", null);
+], UserResolver.prototype, "register", null);
 __decorate([
     type_graphql_1.Mutation(() => UserResponse),
     __param(0, type_graphql_1.Arg("options")),

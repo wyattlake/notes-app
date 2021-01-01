@@ -1,5 +1,5 @@
-mutation Register($options: FullUserInput!) {
-    register(options: $options) {
+mutation Login($options: UsernamePasswordInput!) {
+    login(options: $options) {
         user {
             username
             createdAt

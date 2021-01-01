@@ -19,6 +19,7 @@ export type Query = {
   fetchNotes: Array<Note>;
   fetchNote?: Maybe<Note>;
   currentUser?: Maybe<User>;
+  fetchUsers: Array<User>;
 };
 
 
@@ -48,7 +49,7 @@ export type Mutation = {
   createNote: Note;
   updateNote: Note;
   deleteNote: Scalars['Boolean'];
-  registerUser: UserResponse;
+  register: UserResponse;
   login: UserResponse;
 };
 
@@ -69,7 +70,7 @@ export type MutationDeleteNoteArgs = {
 };
 
 
-export type MutationRegisterUserArgs = {
+export type MutationRegisterArgs = {
   options: FullUserInput;
 };
 
@@ -101,14 +102,14 @@ export type UsernamePasswordInput = {
   password: Scalars['String'];
 };
 
-export type RegisterUserMutationVariables = Exact<{
-  options: FullUserInput;
+export type LoginMutationVariables = Exact<{
+  options: UsernamePasswordInput;
 }>;
 
 
-export type RegisterUserMutation = (
+export type LoginMutation = (
   { __typename?: 'Mutation' }
-  & { registerUser: (
+  & { login: (
     { __typename?: 'UserResponse' }
     & { user?: Maybe<(
       { __typename?: 'User' }
@@ -120,10 +121,40 @@ export type RegisterUserMutation = (
   ) }
 );
 
+export type RegisterMutationVariables = Exact<{
+  options: FullUserInput;
+}>;
 
-export const RegisterUserDocument = gql`
-    mutation RegisterUser($options: FullUserInput!) {
-  registerUser(options: $options) {
+
+export type RegisterMutation = (
+  { __typename?: 'Mutation' }
+  & { register: (
+    { __typename?: 'UserResponse' }
+    & { user?: Maybe<(
+      { __typename?: 'User' }
+      & Pick<User, 'username' | 'createdAt' | 'updatedAt' | 'id'>
+    )>, errors?: Maybe<Array<(
+      { __typename?: 'FieldError' }
+      & Pick<FieldError, 'field' | 'error'>
+    )>> }
+  ) }
+);
+
+export type CurrentUserQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type CurrentUserQuery = (
+  { __typename?: 'Query' }
+  & { currentUser?: Maybe<(
+    { __typename?: 'User' }
+    & Pick<User, 'id' | 'username' | 'createdAt' | 'updatedAt'>
+  )> }
+);
+
+
+export const LoginDocument = gql`
+    mutation Login($options: UsernamePasswordInput!) {
+  login(options: $options) {
     user {
       username
       createdAt
@@ -138,6 +169,40 @@ export const RegisterUserDocument = gql`
 }
     `;
 
-export function useRegisterUserMutation() {
-  return Urql.useMutation<RegisterUserMutation, RegisterUserMutationVariables>(RegisterUserDocument);
+export function useLoginMutation() {
+  return Urql.useMutation<LoginMutation, LoginMutationVariables>(LoginDocument);
+};
+export const RegisterDocument = gql`
+    mutation Register($options: FullUserInput!) {
+  register(options: $options) {
+    user {
+      username
+      createdAt
+      updatedAt
+      id
+    }
+    errors {
+      field
+      error
+    }
+  }
+}
+    `;
+
+export function useRegisterMutation() {
+  return Urql.useMutation<RegisterMutation, RegisterMutationVariables>(RegisterDocument);
+};
+export const CurrentUserDocument = gql`
+    query CurrentUser {
+  currentUser {
+    id
+    username
+    createdAt
+    updatedAt
+  }
+}
+    `;
+
+export function useCurrentUserQuery(options: Omit<Urql.UseQueryArgs<CurrentUserQueryVariables>, 'query'> = {}) {
+  return Urql.useQuery<CurrentUserQuery>({ query: CurrentUserDocument, ...options });
 };

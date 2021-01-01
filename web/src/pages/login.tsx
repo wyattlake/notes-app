@@ -2,29 +2,27 @@ import React from "react";
 import { Form, Formik } from "formik";
 import { Wrapper } from "../components/Wrapper";
 import { InputField } from "components/InputField";
-import { useRegisterMutation } from "generated/graphql";
+import { useLoginMutation } from "generated/graphql";
 import { formikErrorMap } from "utils/formikErrorMap";
 import { useRouter } from "next/router";
 
-interface registerProps {}
+interface loginProps {}
 
-export const Register: React.FC<registerProps> = ({}) => {
+export const Login: React.FC<loginProps> = ({}) => {
     const router = useRouter();
-    const [, register] = useRegisterMutation();
+    const [, login] = useLoginMutation();
     return (
         <Wrapper variant="small">
-            <h1>Register</h1>
+            <h1>Login</h1>
             <Formik
-                initialValues={{ username: "", email: "", password: "" }}
+                initialValues={{ username: "", password: "" }}
                 onSubmit={async (values, { setErrors }) => {
                     console.log(values);
-                    const response = await register({ options: values });
+                    const response = await login({ options: values });
                     console.log(response);
-                    if (response.data?.register.errors) {
-                        setErrors(
-                            formikErrorMap(response.data.register.errors)
-                        );
-                    } else if (response.data?.register.user) {
+                    if (response.data?.login.errors) {
+                        setErrors(formikErrorMap(response.data.login.errors));
+                    } else if (response.data?.login.user) {
                         router.push("/");
                     }
                 }}
@@ -36,11 +34,6 @@ export const Register: React.FC<registerProps> = ({}) => {
                             label="Name"
                             name="username"
                             placeholder="name"
-                        />
-                        <InputField
-                            label="Email"
-                            name="email"
-                            placeholder="email"
                         />
                         <InputField
                             maxLength={30}
@@ -57,4 +50,4 @@ export const Register: React.FC<registerProps> = ({}) => {
     );
 };
 
-export default Register;
+export default Login;

@@ -68,9 +68,14 @@ export class UserResolver {
         return User.findOne(req.session.userId);
     }
 
+    @Query(() => [User])
+    fetchUsers() {
+        return User.find();
+    }
+
     //Registers a user
     @Mutation(() => UserResponse)
-    async registerUser(
+    async register(
         @Ctx() { req }: ContextType,
         @Arg("options") options: FullUserInput
     ): Promise<UserResponse> {
