@@ -102,6 +102,21 @@ export type UsernamePasswordInput = {
   password: Scalars['String'];
 };
 
+export type BaseUserFragment = (
+  { __typename?: 'User' }
+  & Pick<User, 'id' | 'username'>
+);
+
+export type FieldErrorFragment = (
+  { __typename?: 'FieldError' }
+  & Pick<FieldError, 'field' | 'error'>
+);
+
+export type FullUserFragment = (
+  { __typename?: 'User' }
+  & Pick<User, 'id' | 'username' | 'createdAt' | 'updatedAt'>
+);
+
 export type LoginMutationVariables = Exact<{
   options: UsernamePasswordInput;
 }>;
@@ -113,10 +128,10 @@ export type LoginMutation = (
     { __typename?: 'UserResponse' }
     & { user?: Maybe<(
       { __typename?: 'User' }
-      & Pick<User, 'username' | 'createdAt' | 'updatedAt' | 'id'>
+      & BaseUserFragment
     )>, errors?: Maybe<Array<(
       { __typename?: 'FieldError' }
-      & Pick<FieldError, 'field' | 'error'>
+      & FieldErrorFragment
     )>> }
   ) }
 );
@@ -132,10 +147,10 @@ export type RegisterMutation = (
     { __typename?: 'UserResponse' }
     & { user?: Maybe<(
       { __typename?: 'User' }
-      & Pick<User, 'username' | 'createdAt' | 'updatedAt' | 'id'>
+      & BaseUserFragment
     )>, errors?: Maybe<Array<(
       { __typename?: 'FieldError' }
-      & Pick<FieldError, 'field' | 'error'>
+      & FieldErrorFragment
     )>> }
   ) }
 );
@@ -147,27 +162,43 @@ export type CurrentUserQuery = (
   { __typename?: 'Query' }
   & { currentUser?: Maybe<(
     { __typename?: 'User' }
-    & Pick<User, 'id' | 'username' | 'createdAt' | 'updatedAt'>
+    & BaseUserFragment
   )> }
 );
 
-
+export const BaseUserFragmentDoc = gql`
+    fragment BaseUser on User {
+  id
+  username
+}
+    `;
+export const FieldErrorFragmentDoc = gql`
+    fragment FieldError on FieldError {
+  field
+  error
+}
+    `;
+export const FullUserFragmentDoc = gql`
+    fragment FullUser on User {
+  id
+  username
+  createdAt
+  updatedAt
+}
+    `;
 export const LoginDocument = gql`
     mutation Login($options: UsernamePasswordInput!) {
   login(options: $options) {
     user {
-      username
-      createdAt
-      updatedAt
-      id
+      ...BaseUser
     }
     errors {
-      field
-      error
+      ...FieldError
     }
   }
 }
-    `;
+    ${BaseUserFragmentDoc}
+${FieldErrorFragmentDoc}`;
 
 export function useLoginMutation() {
   return Urql.useMutation<LoginMutation, LoginMutationVariables>(LoginDocument);
@@ -176,18 +207,15 @@ export const RegisterDocument = gql`
     mutation Register($options: FullUserInput!) {
   register(options: $options) {
     user {
-      username
-      createdAt
-      updatedAt
-      id
+      ...BaseUser
     }
     errors {
-      field
-      error
+      ...FieldError
     }
   }
 }
-    `;
+    ${BaseUserFragmentDoc}
+${FieldErrorFragmentDoc}`;
 
 export function useRegisterMutation() {
   return Urql.useMutation<RegisterMutation, RegisterMutationVariables>(RegisterDocument);
@@ -195,13 +223,10 @@ export function useRegisterMutation() {
 export const CurrentUserDocument = gql`
     query CurrentUser {
   currentUser {
-    id
-    username
-    createdAt
-    updatedAt
+    ...BaseUser
   }
 }
-    `;
+    ${BaseUserFragmentDoc}`;
 
 export function useCurrentUserQuery(options: Omit<Urql.UseQueryArgs<CurrentUserQueryVariables>, 'query'> = {}) {
   return Urql.useQuery<CurrentUserQuery>({ query: CurrentUserDocument, ...options });
