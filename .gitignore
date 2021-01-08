@@ -1,2 +1,10 @@
 server/.env
 .DS_Store
+
+server/dump.rdb
+
+server/dist/
+
+web/src/generated/
+
+web/yarn.lock
