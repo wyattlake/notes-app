@@ -30,6 +30,9 @@ export class User extends BaseEntity {
     @Column({ unique: true })
     email!: string;
 
-    @Column({ unique: true })
+    @Column()
+    salt!: string;
+
+    @Column()
     password!: string;
 }

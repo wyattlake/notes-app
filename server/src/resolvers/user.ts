@@ -103,12 +103,16 @@ export class UserResolver {
                 ],
             };
         }
-        const hashedPassword = await argon2.hash(options.password);
+        const salt =
+            Math.random().toString(36).substring(2, 15) +
+            Math.random().toString(36).substring(2, 15);
+        const hashedPassword = await argon2.hash(options.password + salt);
         //Tries to create a user
         try {
             user = await User.create({
                 username: options.username,
                 email: options.email,
+                salt: salt,
                 password: hashedPassword,
             }).save();
         } catch (error) {
@@ -174,7 +178,10 @@ export class UserResolver {
             };
         }
         //Validates the password
-        const valid = await argon2.verify(user.password, options.password);
+        const valid = await argon2.verify(
+            user.password,
+            options.password + user.salt
+        );
         //Returns if the password is invalid
         if (!valid) {
             return {
