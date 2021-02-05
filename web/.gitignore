@@ -3,3 +3,4 @@ src/generated
 .next/
 out/
 node_modules
+.env

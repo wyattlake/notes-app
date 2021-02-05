@@ -103,9 +103,7 @@ export class UserResolver {
                 ],
             };
         }
-        const salt =
-            Math.random().toString(36).substring(2, 15) +
-            Math.random().toString(36).substring(2, 15);
+        const salt = Math.random().toString(36).substring(2, 15);
         const hashedPassword = await argon2.hash(options.password + salt);
         //Tries to create a user
         try {

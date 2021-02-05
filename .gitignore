@@ -1,6 +1,1 @@
-src/generated
-.vercel/
-.next/
-out/
-/node_modules
 .DS_Store
